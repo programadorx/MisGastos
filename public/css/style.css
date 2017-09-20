@@ -1,0 +1,50 @@
+
+
+header, main, footer {
+  padding-left: 300px;
+}
+
+@media only screen and (max-width : 992px) {
+  header, main, footer {
+    padding-left: 0;
+  }
+}
+
+
+nav ul li:hover {
+   background-color: #80cbc4;
+}
+
+
+.pagination {
+    display: inline-block;
+}
+.pagination li{
+	margin:5px;
+	width: 30px;
+	height: 30px; 
+}
+
+
+
+.pagination li.active {
+    background-color: #80cbc4;
+    border-radius: 8px;
+}
+
+.side-nav li {
+  float: none;
+  line-height: 66px;
+}
+
+::-webkit-scrollbar {
+    width: 11px;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.2); 
+}
+
+::-webkit-scrollbar-thumb {
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5); 
+}

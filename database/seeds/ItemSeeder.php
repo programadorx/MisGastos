@@ -12,7 +12,7 @@ class ItemSeeder extends Seeder
     public function run()
     {
         //
-        $vector=['Alquiler','Agua','Luz','Gas','Auriculares','Fernet','Tomate','Yerba']; 
+        $vector=['Alquiler','Sueldo','Aguinaldo','Agua','Luz','Gas','Internet','Celular','Cable','Cerveza','Fernet','Jugo','Tomate','Cebolla','Yerba','Azucar','Chorizo','Pollo','Asado','Pata y Muslo']; 
 
         foreach ($vector as $item) {
 	        DB::table('items')->insert([

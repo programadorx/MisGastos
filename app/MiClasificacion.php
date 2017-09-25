@@ -11,22 +11,20 @@ class MiClasificacion extends Model
     la voy a tratar como un modelo en si mismo, y le puse un nombre mas facil
     al modelo para simplicidad, pero hace referencia a la tabla categoria_item_user*/
 
-    protected $table='categoria_item_user'; //nombre de tabla
-
+    protected $table='categoria_item_user'; 
     protected $primaryKey='id';
 
-
     public $timestamps=false;
-    //le indico que no se agreguen las dos columnas
-    //de fecha de creacion y modificacion
-
+    /*
+        le indico que no se agreguen las dos columnas
+        de fecha de creacion y modificacion
+    */
 
     protected $guarded = [
-        'usuario_id',
-       
+        'usuario_id',       
     ];
-    protected $fillable = [
-      
+
+    protected $fillable = [      
         'categoria_id',
         'item_id', 
     ];

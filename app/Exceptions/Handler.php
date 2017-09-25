@@ -5,7 +5,7 @@ namespace App\Exceptions;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class Handler extends ExceptionHandler
 {
     /**
@@ -43,7 +43,15 @@ class Handler extends ExceptionHandler
      * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
-    {
+    {   
+     
+        if ($exception instanceof NotFoundHttpException) {        
+            return redirect('/categoria'); 
+            /*  
+            Si la ruta no existe lo redirecciono a categoria,
+            si no estaba logueado, se redirecciona a home 
+            */
+        }
         return parent::render($request, $exception);
     }
 
@@ -60,6 +68,6 @@ class Handler extends ExceptionHandler
             return response()->json(['error' => 'Unauthenticated.'], 401);
         }
 
-        return redirect()->guest(route('login'));
+        return redirect()->guest('/');
     }
 }

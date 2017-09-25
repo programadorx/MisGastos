@@ -6,6 +6,8 @@ use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Categoria;
+use App\Item;
 
 class RegisterController extends Controller
 {
@@ -62,10 +64,25 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        $user= User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
+
+        /* 
+            Cargo los datos que tenia en el seed, ya le conozo los id,
+            a cada usuario que se registra le asocio ya datos cargados
+            Categorias e items. 
+        */
+        for ($i=1; $i <12 ; $i++) { 
+           Categoria::find($i)->users()->sync($user->id,false);
+        }
+
+        for ($i=1; $i <21 ; $i++) { 
+           Item::find($i)->users()->sync($user->id,false);
+        }
+
+        return $user;
     }
 }

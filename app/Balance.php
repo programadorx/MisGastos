@@ -35,7 +35,6 @@ class Balance extends Model
     ];
 
    public function user(){
-
     	// balance le pertenece a un usuario 
     	return $this->belongsTo('App\User','usuario_id');
     }

@@ -10,13 +10,10 @@ use DB;
 use Session;
 use Illuminate\Support\Facades\Redirect;
 
-class EgresoController extends Controller
-{
+class EgresoController extends Controller{
     
-    public function __construct(){
-        // solo puede acceder al controlador un usuario logueado
-        $this->middleware('auth');
-
+    public function __construct(){        
+        $this->middleware('auth');// solo puede acceder al controlador un usuario logueado
     }
     /**
      * Display a listing of the resource.
@@ -34,15 +31,6 @@ class EgresoController extends Controller
 
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -50,8 +38,8 @@ class EgresoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
+    public function store(Request $request){
+
         $nuevoBalance= new Balance();
 
         $nuevoBalance->usuario_id= Auth::user()->id;
@@ -69,44 +57,9 @@ class EgresoController extends Controller
         $nuevoBalance->descripcion=$request->descripcion;
 
         $nuevoBalance->save();
-
    
         Session::flash('guardar','Egreso creado con exito');
         return Redirect::to('egreso');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**
@@ -115,10 +68,16 @@ class EgresoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
-    }
+    public function destroy($id){
+        try{
+            $egreso=Balance::findOrFail($id);
+            $egreso->delete();
+            Session::flash('eliminar','Se elimino el egreso.');
+        } catch (\Exception $e) {
+            Session::flash('aviso','No se pudo eliminar el egreso.');
+        }
+        return Redirect::to('egreso');
+    } 
 
 
     public function estadisticas()

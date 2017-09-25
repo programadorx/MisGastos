@@ -11,40 +11,25 @@ use Session;
 use JavaScript; // para pasar datos a la vista directamente a javasrcipt
 use Illuminate\Support\Facades\Redirect;
 
-class IngresoController extends Controller
-{
+class IngresoController extends Controller{
 
     public function __construct(){
-        // solo puede acceder al controlador un usuario logueado
-        $this->middleware('auth');
-
+        
+        $this->middleware('auth');// solo puede acceder al controlador un usuario logueado
     }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
-         $user=Auth::user();
-         $misIngresos=Auth::user()->balances()->where('tipo','ingreso')->orderBy('fecha','desc')->paginate(8); 
+    public function index(){
         
- 
+        $user=Auth::user();
+        $misIngresos=Auth::user()->balances()->where('tipo','ingreso')->orderBy('fecha','desc')->paginate(8); 
 
         $misClasificaciones=$user->clasificaciones->groupBy('categoria.nombre');
-
         return view('ingreso.index',['misIngresos'=>$misIngresos,'misClasificaciones'=>$misClasificaciones]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -53,10 +38,8 @@ class IngresoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
-
+    public function store(Request $request){
+    
         $nuevoBalance= new Balance();
 
         $nuevoBalance->usuario_id= Auth::user()->id;
@@ -74,44 +57,9 @@ class IngresoController extends Controller
         $nuevoBalance->descripcion=$request->descripcion;
 
         $nuevoBalance->save();
-
    
         Session::flash('guardar','Ingreso creado con exito');
         return Redirect::to('ingreso');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
     }
 
     /**
@@ -120,17 +68,23 @@ class IngresoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
-        //
+    public function destroy($id){
+        try{
+            $ingreso=Balance::findOrFail($id);
+            $ingreso->delete();
+            Session::flash('eliminar','Se elimino el ingreso.');
+        } catch (\Exception $e) {
+            Session::flash('aviso','No se pudo eliminar el ingreso.');
+        }
+        return Redirect::to('ingreso'); 
     }
+
 
     /**
      * Responds to requests to GET /ingreso/estadisticas
      *
     */
-    public function estadisticas()
-    {
+    public function estadisticas(){
         //para cargar select de años
         $misAños=Auth::user()->balances()->select(DB::raw('YEAR(fecha) año'))->groupBy('año')->get()->pluck('año') ;
         $meses=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
@@ -177,7 +131,6 @@ class IngresoController extends Controller
     }
 
     public function getPorAnio(Request $request,$año){
-
         if ($request->ajax()) {
             $aneo= DB::table('balances')->where('usuario_id','=',Auth::user()->id)
             ->where('tipo','=','ingreso')
@@ -229,7 +182,7 @@ class IngresoController extends Controller
         }
     }
 
-   public function getPorProducto(Request $request,$idProducto,$tipo){
+    public function getPorProducto(Request $request,$idProducto,$tipo){
         if ($request->ajax()) {
           
             if ($tipo=='todo') {

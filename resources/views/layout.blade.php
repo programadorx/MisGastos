@@ -187,7 +187,7 @@
 
     @if(Session::has('aviso'))
       <script>
-        Materialize.toast("{{ Session::get('aviso') }}", 2500, 'amber darken-4');  
+        Materialize.toast("{{ Session::get('aviso') }}", 4500, 'amber darken-4');  
       </script>
     @endif
     @if(Session::has('guardar'))

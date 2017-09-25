@@ -12,7 +12,7 @@ class CategoriaSeeder extends Seeder
     public function run()
     {
 
-	    $vector=['Hogar','Servicios','Electrodomesticos','Bebidas','Frutas y Verduras','Comestibles'];
+	    $vector=['Hogar','Servicios','Electrodomesticos','Bebidas','Frutas y Verduras','Comestibles','Ocio','Vacaciones','Trabajo','Carnes','Enlatados'];
 	        //
 	    foreach ($vector as $categoria) {
 

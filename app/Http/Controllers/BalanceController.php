@@ -12,29 +12,35 @@ use Session;
 use DB;
 use JavaScript; // para pasar datos a la vista directamente a javasrcipt
 use Carbon\Carbon;
-class BalanceController extends Controller
-{
 
-    public function __construct(){
-        // solo puede acceder al controlador un usuario logueado
-        $this->middleware('auth');
+
+class BalanceController extends Controller{
+
+    public function __construct(){        
+        $this->middleware('auth');// solo puede acceder al controlador un usuario logueado
 
     }
 
-    public function index()
-    {
+    public function index(){
 
-    // *****************Primer Grafico***********************   
+        // *****************Primer Grafico***********************   
    
         /*
             Es el total de ingreso y egreso historico. 
             dd($misBalances); es una coleccion > {egreso=>xxx,ingreso=>xxxx}
         */
         $misBalances=Auth::user()->balances()->groupBy('tipo')
-        ->select(DB::raw('sum(monto) as suma,tipo'))->get()->pluck('suma','tipo');    
+        ->select(DB::raw('sum(monto) as suma,tipo'))->get()->pluck('suma','tipo'); 
 
+        
+        if ( !$misBalances->has('egreso') ) {
+            $misBalances->put('egreso',0);
+        }
+        if ( !$misBalances->has('ingreso') ) {
+            $misBalances->put('ingreso',0);
+        }
 
-    //*********************Segundo Grafico*****************
+        //*********************Segundo Grafico*****************
 
         $anual= DB::table('balances')->where('usuario_id','=',Auth::user()->id)
         ->select(DB::raw('YEAR(fecha) año'),'tipo',DB::raw('sum(monto) as suma')) 
@@ -46,11 +52,11 @@ class BalanceController extends Controller
         
             Luego lo convierto en un array e inicializo otro de forma correcta,
             para tener agrupado por año tanto ingresos como egresos para completarlo.
-
             el nuevo array tiene ingresos y egresos en 0 en caso
             que un año solo contenga uno o ingresos o gastos y luego lo completo
 
-        */       
+        */     
+
         $anual_array=$anual->toArray();
         $ingresos_egresos_anuales= array();
 
@@ -68,8 +74,6 @@ class BalanceController extends Controller
             Separo todos los array para que vayan al grafico por separado
         */
 
-        
-
         JavaScript::put([                
                 'claves_anios' => $claves_anios,
                 'ingresos_anios'=>$ingresos_anios,
@@ -77,14 +81,12 @@ class BalanceController extends Controller
                 'misBalances'=>$misBalances
         ]);
 
-        //dd(json_encode($ingresos_egresos_anuales));
-
-       $mejorBalance=['anio'=>'','total'=>''];
-       $peorBalance=['anio'=>'','total'=>''];
-       $maxBalance=-9999999;
-       $minBalance=999999999;
+        $mejorBalance=['anio'=>'','total'=>''];
+        $peorBalance=['anio'=>'','total'=>''];
+        $maxBalance=-9999999;
+        $minBalance=999999999;
        
-       foreach ($ingresos_egresos_anuales as $key=>$value) {            
+        foreach ($ingresos_egresos_anuales as $key=>$value) {            
             if ( $value['ingreso'] - $value['egreso'] > $maxBalance ) {
                 $maxBalance= $value['ingreso'] - $value['egreso'];
                 $mejorBalance['anio']= $key;
@@ -96,20 +98,19 @@ class BalanceController extends Controller
                 $peorBalance['anio']= $key;
                 $peorBalance['total']= $minBalance;
             }
-       }
+        }
     
         $datos=collect();
         $datos->put('mejorBalance',$mejorBalance);
         $datos->put('peorBalance',$peorBalance);
         $datos->put('balanceHistorico',$misBalances);
 
-
         return view('balance.index',['datos'=>$datos]);
 
     }
 
 
-    public function filtrado(){ //Request $request
+    public function filtrado(){ 
         
         //para cargar select de años
         $misAños=Auth::user()->balances()->select(DB::raw('YEAR(fecha) año'))->groupBy('año')->get()->pluck('año') ;
@@ -120,11 +121,9 @@ class BalanceController extends Controller
     
 
     /*
-
-    los IF request->ajax deberia agregarle mas adelante un else, para que retorne a 
-    otra vista y no quede colgado por si alguien quiere acceder a esa ruta.
+        los IF request->ajax deberia agregarle mas adelante un else, para que retorne a 
+        otra vista y no quede colgado por si alguien quiere acceder a esa ruta.
     */
-
     public function getPorAnio(Request $request,$año){
 
         if ($request->ajax()) {
@@ -140,8 +139,8 @@ class BalanceController extends Controller
     }
 
     public function getPorMes(Request $request,$mes){
-        if ($request->ajax()) {
-          
+        
+        if ($request->ajax()) {          
             $mess= DB::table('balances')->where('usuario_id','=',Auth::user()->id)
             ->select(DB::raw('YEAR(fecha) año'),DB::raw('MONTH(fecha) mes'),'tipo',DB::raw('sum(monto) as suma')) 
             ->groupBy('año','mes','tipo')->orderBy('año','asc')->get();
@@ -150,10 +149,11 @@ class BalanceController extends Controller
             $forma= $this->formatearArray($res);
 
             return response()->json($forma);
-       }
+        }
     }
 
     public function getPorDia(Request $request,$desde,$hasta){
+       
         if ($request->ajax()) {
             $dias= DB::table('balances')->where('usuario_id','=',Auth::user()->id)
             ->select('fecha','tipo',DB::raw('sum(monto) as suma')) 
@@ -168,8 +168,9 @@ class BalanceController extends Controller
 
 
     public function getMensual(Request $request,$desde,$hasta){
+        
         if ($request->ajax()) {
-          
+                  
             $mess= DB::table('balances')->where('usuario_id','=',Auth::user()->id)
             ->select(DB::raw('YEAR(fecha) año'),DB::raw('MONTH(fecha) mes'),'tipo',DB::raw('sum(monto) as suma')) 
             ->groupBy('año','mes','tipo')->orderBy('año','asc')->get();

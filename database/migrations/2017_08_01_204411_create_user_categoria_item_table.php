@@ -14,7 +14,7 @@ class CreateUserCategoriaItemTable extends Migration
     public function up()
     {
         Schema::create('categoria_item_user', function (Blueprint $table) {
-            $table->increments('id');
+            $table->increments('id')->references('cat_item_user')->on('balances')->onDelete('restrict');
             $table->integer('usuario_id')->unsigned();
             $table->integer('categoria_id')->unsigned();
             $table->integer('item_id')->unsigned();
@@ -33,7 +33,7 @@ class CreateUserCategoriaItemTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down() 
     {
         Schema::dropIfExists('categoria_item_user');
     }

@@ -6,7 +6,7 @@
 	<div class="col s12 m12 l12 center-align">
 		<h3>Mis Items</h3>
 	</div>
-</div>
+</div> 
 	
 <div class="row">
 	<div class="col s12 m12 l12">
@@ -37,9 +37,12 @@
 				<tr>					
 					<td><p>{{$item->nombre}}</p></td>
 					<td>						
-						<a href="{{URL::action('ItemController@destroy',$item->idItem)}}" onclick="return confirm('¿Seguro?')">
+					    {{ Form::open(array('url' => 'item/'.$item->pivot->id)) }}
+					    {{ Form::hidden("_method", "DELETE") }}							
+					    <button onclick="return confirm('¿esta seguro?');" class="btn-flat waves-effect waves-light" type="submit" name="action">
 							<i class="material-icons">close</i>
-						</a>
+					    </button>					 
+					    {{ Form::close() }}
 					</td>					
 				</tr>
 				@endforeach

@@ -15,8 +15,8 @@ class ClasificacionController extends Controller
 {
     
     public function __construct(){
-        // solo puede acceder al controlador un usuario logueado
-        $this->middleware('auth');
+        
+        $this->middleware('auth');// solo puede acceder al controlador un usuario logueado
 
     }
     /**
@@ -24,35 +24,16 @@ class ClasificacionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {   
-        $idUser=Auth::user()->id; 
- 
-        $misItems=Auth::user()->items;      
+    public function index(){ 
+
+        $misItems=Auth::user()->items()->where('borrado','=',false)->get(); 
      
         $misClasificaciones=Auth::user()->clasificaciones->sortBy('categoria.nombre')->groupBy('categoria.nombre'); 
-        
-        //*********************************
-        // Debo pasar a la vista mis categorias sin ninguna asociasiones echas aun, asi las puede rellenar.
-        
-        $misCat_sinClasi= Auth::user()->categorias()->doesntHave('clasificaciones')->get();
+
+        // Debo pasar a la vista mis categorias sin ninguna asociasiones echas aun, asi las puede rellenar.        
+        $misCat_sinClasi= Auth::user()->categorias()->where('borrado','=',false)->doesntHave('clasificaciones')->get();
         
         return view('clasificacion.index',['agrupados'=>$misClasificaciones,'misItems'=>$misItems,'sinClasificacion'=>$misCat_sinClasi]);
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-        $misCategorias=Auth::user()->categorias; 
-        $misItems=Auth::user()->items;
-
-        return view('clasificacion.create',['misCategorias'=>$misCategorias,'misItems'=>$misItems]);
     }
 
     /**
@@ -61,26 +42,20 @@ class ClasificacionController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        //
+    public function store(Request $request){
         $miId=Auth::user()->id;
         $categ=$request->get('categoria'); 
         $item=$request->get('item');
 
         $existe=DB::table('categoria_item_user as ciu')->where('usuario_id','=',$miId)
-        ->where('categoria_id','=',$categ)
-        ->where('item_id','=',$item)
-        ->first();
+        ->where('categoria_id','=',$categ)->where('item_id','=',$item)->first();
 
         if ($existe != null) {
             Session::flash('aviso','Ese item ya pertenece a esa categoria');
-            return Redirect::to('clasificacion');
-          // dd("Ya existe ese item asignado a esa categoria, debo informar con un flash o no hacer nada");
+            return Redirect::to('clasificacion');          
         } else {
 
             $nueva= new MiClasificacion();
-
             $nueva->usuario_id=$miId;
             $nueva->categoria_id=$categ;
             $nueva->item_id=$item;
@@ -88,45 +63,9 @@ class ClasificacionController extends Controller
 
             Session::flash('guardar','Se agrego el item a la categoria.');
             return Redirect::to('clasificacion');
-        }
-        
-      //  dd('categoria id es ..'.$categ.' y item '.$item);
+        }        
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-        
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
     /**
      * Remove the specified resource from storage.
@@ -134,15 +73,17 @@ class ClasificacionController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
-    {
+    public function destroy($id){
         //Me llega el id, te la tabla que representa toda la asociacion
         //[ --> id <--, usuario_id,categoria_id,item_id]
-      
-        $clasi=MiClasificacion::find($id);
-        $clasi->delete();
+        try {
+            $clasi=MiClasificacion::find($id);
+            $clasi->delete();
+            Session::flash('eliminar','Se elimino el item de la categoria');          
+        } catch (\Exception $e) {
+           Session::flash('aviso','Tiene balances cargados. Debe eliminarlos previamente.');
+        }
 
-        Session::flash('eliminar','Se elimino el item de la categoria');
         return Redirect::to('clasificacion');
     }
 }

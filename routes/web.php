@@ -15,23 +15,20 @@ Route::get('/', function () {
 });
 
 
-Route::get('/inicio', function () { //acomodar lo de inicio dsp
-  //  return view('welcome');
-
-	return view('layout2');	
-});
-
-
-
 Auth::routes();
 
 Route::get('/home', 'CategoriaController@index');//el / me tira al home y de aca lo tiro a cate
 
 
-Route::resource('/categoria','CategoriaController');
-Route::resource('/item','ItemController');
 
-Route::resource('/clasificacion','ClasificacionController');
+Route::resource('/categoria','CategoriaController',['except'=>['create','update','show','edit']]);
+
+
+Route::resource('/item','ItemController',['except'=>['create','update','show','edit']]);
+
+
+
+Route::resource('/clasificacion','ClasificacionController',['except'=>['create','update','show','edit']]);
 
 Route::get('/clasificacion/{id}/destroy',
 	['uses'=>'ClasificacionController@destroy','as'=>'clasificacion.destroy']);
@@ -42,8 +39,10 @@ Route::get('/clasificacion/{id}/destroy',
 
 
 
-// Para agregar un metodo al resource  como por ejemplo estadisticas
-//debe realizarse antes del resource, sino no funciona.
+/*
+	Para agregar rutas adicionales a un resource, debo agregarlas
+	antes del resources mismo, sino no funcionan.
+*/
 
 Route::get('/ingreso/estadisticas','IngresoController@estadisticas'); 
 Route::get('/ingreso/estadisticas/diario/{desde}/{hasta}','IngresoController@getPorDia');
@@ -52,7 +51,8 @@ Route::get('/ingreso/estadisticas/poranio/{anio}','IngresoController@getPorAnio'
 Route::get('/ingreso/estadisticas/pormes/{mes}','IngresoController@getPorMes');
 Route::get('/ingreso/estadisticas/porcategoria/{idCategoria}','IngresoController@getPorCategoria');
 Route::get('/ingreso/estadisticas/porproducto/{id}/{tipo}','IngresoController@getPorProducto');
-Route::resource('/ingreso','IngresoController');
+
+Route::resource('/ingreso','IngresoController',['except'=>['create','update','show','edit']]);
 
 
 Route::get('/egreso/estadisticas','EgresoController@estadisticas'); 
@@ -62,7 +62,8 @@ Route::get('/egreso/estadisticas/poranio/{anio}','EgresoController@getPorAnio');
 Route::get('/egreso/estadisticas/pormes/{mes}','EgresoController@getPorMes');
 Route::get('/egreso/estadisticas/porcategoria/{idCategoria}','EgresoController@getPorCategoria');
 Route::get('/egreso/estadisticas/porproducto/{id}/{tipo}','EgresoController@getPorProducto');
-Route::resource('/egreso','EgresoController');
+
+Route::resource('/egreso','EgresoController',['except'=>['create','update','show','edit']]);
 
 
 

@@ -33,13 +33,14 @@ class User extends Authenticatable
     public function categorias(){
 
         // usuario tiene muchas categorias {modelo, tabla_pivot, keyModeloPropio, KeyOtromodelo}
-        return $this->belongsToMany('App\Categoria', 'categoria_user','usuario_id','categoria_id');
+        return $this->belongsToMany('App\Categoria', 'categoria_user','usuario_id','categoria_id')->withPivot('id');
+        //whitpivot id se lo agregue para recuperar tmb el id de la relacion para eliminarla o actualizarla
     }
 
     public function items(){
 
         // usuario tiene muchos items {modelo, tabla_pivot, keyModeloPropio, KeyOtromodelo}
-        return $this->belongsToMany('App\Item', 'item_user','usuario_id','item_id');
+        return $this->belongsToMany('App\Item', 'item_user','usuario_id','item_id')->withPivot('id');
     }
 
     //agregue pa la 3era tabla

@@ -37,9 +37,12 @@
 					<tr>					
 						<td><p>{{$cat->nombre}}</p></td>
 						<td>
-							<a href="{{URL::action('CategoriaController@destroy',$cat->idCategoria)}}" onclick="return confirm('¿Seguro?')">
-							<i class="material-icons">close</i>
-							</a>
+						    {{ Form::open(array('url' => 'categoria/'.$cat->pivot->id)) }}
+						    {{ Form::hidden("_method", "DELETE") }}							
+						    <button onclick="return confirm('¿esta seguro?');" class="btn-flat waves-effect waves-light" type="submit" name="action">
+								<i class="material-icons">close</i>
+						    </button>					 
+						    {{ Form::close() }}
 						</td>
 						
 					</tr>
@@ -53,3 +56,4 @@
 	</div>
 </div>
 @endsection
+

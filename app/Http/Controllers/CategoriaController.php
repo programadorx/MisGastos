@@ -29,7 +29,7 @@ class CategoriaController extends Controller
             Pero yo necesito recuperar las asociadas al usuario, las de la tabla pivot digamos
             y solo aquellas que el no haya borrado
         */
-        $misCategorias=Auth::user()->categorias()->where('borrado','=',false)->orderBy('nombre','asc')->paginate(8); 
+        $misCategorias=Auth::user()->categorias()->where('borrado','=',false)->orderBy('nombre','asc')->get(); 
 
         return view('categoria.index',['misCategorias'=>$misCategorias]);
     }

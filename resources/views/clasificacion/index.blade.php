@@ -4,100 +4,102 @@
 
 <div class="row">
 	<div class="col s12 m12 l12 center-align">
-		<h3>Mi Clasificacion</h3>
+		<h3>Mis Clasificaciones</h3>
 	</div>
 </div>
 	
 <div class="row">
 	<div class="col s12 m12 l12">
-		
-		<table class="centered highlight">			
+		@if($agrupados->count()>0)
+			<div class="col s12 m12 l12"><i>Categorias que ya poseen items</i></div>
+			<hr>
+			<ul class="collapsible" data-collapsible="accordion">		
 			@foreach($agrupados as $categoria)
-			<thead>
-				<tr>	
-					{{Form::open(['url'=>'clasificacion','method'=>'POST','autocomplete'=>'off'])}}
+				<li>
+				<div class="collapsible-header">	
+					{{Form::open(['url'=>'clasificacion','method'=>'POST','autocomplete'=>'off','class'=>'col s12 m12 l12'])}}
 					{{Form::token()}}
-						
-					<th><p>{{$categoria[0]->categoria->nombre}}</p>
+
+					<div class="input-field col s4 m4 l4">
+						<b>{{$categoria[0]->categoria->nombre}}</b>
 						<input type="hidden" name="categoria" value="{{$categoria[0]->categoria_id}}">
-					</th>
-					<th>
-						<div class="row">	
-							<div class="input-field col s12 m12 l12">				
-							    <select name="item" class="misitems" style="width:100%" required>
-						    	<option value="" disabled selected>Agregue item..</option>		     
-							     @foreach ($misItems as $item)	
-						         <option value="{{$item->idItem}}">{{$item->nombre}}</option>
-						         @endforeach
-							    </select>	
-						    </div>		   			
-						</div>	
-					</th>
-					<th>
-						<div class="col s12 m12 l12">
-							<button class="btn btn-primary">Agregar</button>
-						</div>
-					</th>
-					{{Form::close()}}
-				</tr>
-			</thead>
-			<tbody>
-				@foreach($categoria as $item)
-				<tr>									
-					<td><p>{{$item->item->nombre}}</p></td>
-					<td>
-					<a href="{{URL::action('ClasificacionController@destroy',$item->id)}}" onclick="return confirm('¿Seguro?')">
-						<i class="material-icons">close</i>
-					</a>
-					</td>
-					<td>				      				
-					</td>
-					
-				</tr>
-				@endforeach
-				<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-			</tbody>
-			@endforeach
-
-		</table>
-
-
+					</div>				
 		
-		<table class="centered">	
-			@foreach($sinClasificacion as $categoria)	
-			<thead>
-				<tr>	
-					{{Form::open(['url'=>'clasificacion','method'=>'POST','autocomplete'=>'off'])}}
-					{{Form::token()}}
-						
-					<th>
-						<p>{{$categoria->nombre}} </p>
-						<input type="hidden" name="categoria" value="{{$categoria->idCategoria}}">
-					</th>
-					<th>
-						<div class="input-field col s12 m12 l12">						
+					<div class="input-field col s5 m5 l5">				
+					    <select name="item" class="misitems" style="width:100%" required>
+				    	<option value="" disabled selected>Agregue item..</option>		     
+					     @foreach ($misItems as $item)	
+				         <option value="{{$item->idItem}}">{{$item->nombre}}</option>
+				         @endforeach
+					    </select>	
+				    </div>		   			
+					<div class="input-field col s3 m3 l3 center-align">
+						<button class="btn btn-primary">Agregar</button>
+					</div>
+					
+					{{Form::close()}}
+				</div>
+				<div class="collapsible-body">				
+					@foreach($categoria as $item)
+					<div class="row">
+						<div class="col s2 m2 l2"></div>												
+						<div class="col s6 m6 l6">
+							<p>{{$item->item->nombre}}</p>
+						</div>
+						<div class="col s4 m4 l4">
+							<a href="{{URL::action('ClasificacionController@destroy',$item->id)}}" onclick="return confirm('¿Seguro?')">
+							<i class="material-icons">close</i>
+							</a>
+						</div>
+					</div>					
+					@endforeach					
+				</div>
+				</li>
+			@endforeach
+			</ul> 
+
+			<div class="center-align">
+				{{$agrupados->render() }}
+			</div>		
+		@endif
+
+		<br><br>
+		@if($sinClasificacion->count()>0)
+
+			<div class="col s12 m12 l12"><i>Categorias sin items asociados</i></div>
+			<hr>
+			
+			<ul>	
+				@foreach($sinClasificacion as $categoria)	
+				<li>
+					<div class="col s12 m12 l12 ">
+						{{Form::open(['url'=>'clasificacion','method'=>'POST','autocomplete'=>'off'])}}
+						{{Form::token()}}					
+						<div class="input-field col s4 m4 l4">
+							<b>{{$categoria->nombre}} </b>
+							<input type="hidden" name="categoria" value="{{$categoria->idCategoria}}">
+						</div>
+					
+						<div class="input-field col s5 m5 l5">							
 						    <select name="item" class="misitems" style="width:100%" required>
 						    	<option value="" disabled selected>Agregue item..</option>		     
-						    	 @foreach ($misItems as $item)	
-					        	 <option value="{{$item->idItem}}">{{$item->nombre}}</option>
-					       		 @endforeach
+						    	@foreach ($misItems as $item)	
+					        	<option value="{{$item->idItem}}">{{$item->nombre}}</option>
+					       		@endforeach
 						    </select>			   			
 						</div>	
-					</th>
-					<th>
-						<div class="col s12 m12 l12">
+
+						<div class="input-field col s3 m3 l3 center-align">
 							<button class="btn btn-primary">Agregar</button>
 						</div>
-					</th>
-					{{Form::close()}}
-				</tr>
-			</thead>		
-			@endforeach
-		</table>
+
+						{{Form::close()}}
+					</div>
+				</li>		
+				@endforeach
+			</ul>
+	
+		@endif
 
 
 	</div>
@@ -109,10 +111,11 @@
   <script>
 	$(document).ready(function() {
 	  $(".misitems").select2({
-	  	placeholder: '+ items..',
+	  	placeholder: 'Agregar items..',
 	  	allowClear: true,
 	  	maximumInputLength: 80
 	  });
+	   $('.collapsible').collapsible();
 	});
   </script>
 @endpush

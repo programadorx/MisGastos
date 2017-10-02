@@ -24,7 +24,7 @@ class ItemController extends Controller
      */
     public function index(){
         
-        $misItems=Auth::user()->items()->where('borrado','=',false)->orderBy('nombre','asc')->Paginate(10); 
+        $misItems=Auth::user()->items()->where('borrado','=',false)->orderBy('nombre','asc')->get(); 
         //Recupero las de la tabla pivot solo las del usuario  
         return view('item.index',['misItems'=>$misItems]);
     }

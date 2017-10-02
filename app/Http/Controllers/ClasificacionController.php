@@ -10,6 +10,9 @@ use App\MiClasificacion;
 use App\Categoria;
 use DB;
 use Session;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Collection;
 
 class ClasificacionController extends Controller
 {
@@ -28,11 +31,18 @@ class ClasificacionController extends Controller
 
         $misItems=Auth::user()->items()->where('borrado','=',false)->get(); 
      
-        $misClasificaciones=Auth::user()->clasificaciones->sortBy('categoria.nombre')->groupBy('categoria.nombre'); 
+        //$misClasificaciones=Auth::user()->clasificaciones->sortBy('categoria.nombre')->groupBy('categoria.nombre'); original
 
+        // utilize una funcion para crear la paginacion para una "coleccion"
+       $prueba=Auth::user()->clasificaciones->sortBy('categoria.nombre')->groupBy('categoria.nombre');
+       $misClasificaciones = $this->paginate($prueba);
+       $misClasificaciones->setPath('/clasificacion');
+     
         // Debo pasar a la vista mis categorias sin ninguna asociasiones echas aun, asi las puede rellenar.        
-        $misCat_sinClasi= Auth::user()->categorias()->where('borrado','=',false)->doesntHave('clasificaciones')->get();
-        
+        $cate_asociadas= Auth::user()->clasificaciones()->pluck('categoria_id')->toArray();
+       
+        $misCat_sinClasi= Auth::user()->categorias()->where('borrado','=',false)->whereNotIn('categoria_id', $cate_asociadas)->get();
+
         return view('clasificacion.index',['agrupados'=>$misClasificaciones,'misItems'=>$misItems,'sinClasificacion'=>$misCat_sinClasi]);
     }
 
@@ -85,5 +95,11 @@ class ClasificacionController extends Controller
         }
 
         return Redirect::to('clasificacion');
+    }
+
+    public function paginate($items, $perPage = 8, $page = null, $options = []) {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }

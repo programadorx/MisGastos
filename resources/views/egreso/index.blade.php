@@ -88,7 +88,7 @@
 <div class="row">
 	<div class="col s12 m12 l12">
 		
-		<table class="centered bordered highlight">
+		<table class="centered bordered highlight responsive-table" id="data_table">
 		<thead>
 			<tr>				
 				<th>Fecha</th>
@@ -130,9 +130,6 @@
 
 		</tbody>
 		</table>
-		<div class="center-align">
-			{{$misEgresos->render()}} 
-		</div>
 
 	</div>
 </div>
@@ -144,4 +141,23 @@
 
 @push('scripts')
 <script src="{{ asset('js/funcionalidad/egreso.js') }}"></script>
+<script>
+	$(document).ready(function() {
+    	$('#data_table').DataTable({
+    		"lengthChange": false,
+	        "language": {
+	            "lengthMenu": "Mostrar _MENU_ registros por pagina",
+	            "zeroRecords": "Sin resultados",
+	            "info": "Mostrando Pagina _PAGE_ de _PAGES_",
+	            "infoEmpty": "No hay registros",
+	            "infoFiltered": "(Filtrado sobre _MAX_ registros totales)",
+	            "search": "Buscar..",
+                "paginate": {
+			      "previous": "Anterior",
+			      "next": "Siguiente"
+			    }          
+        	}
+    	});
+	} );
+</script>
 @endpush

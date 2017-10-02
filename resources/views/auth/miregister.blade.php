@@ -52,9 +52,9 @@
             </div>
         </div>
 
-        <div class="form-group">
-            <div class="col-md-6 col-md-offset-4">
-                <button type="submit" class="btn btn-primary">
+        <div class="row">
+            <div class="col s12 m12 l12 center">
+                <button type="submit" class="btn waves-effect waves-light orange">
                     Registrar
                 </button>
             </div>

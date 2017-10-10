@@ -141,10 +141,12 @@
             <a class="collapsible-header" href="#">Ayuda<i class="material-icons">help</i></a>
             <div class="collapsible-body">
             <ul>
-              <li><a href="#!">First</a></li>
-              <li><a href="#!">Second</a></li>
-              <li><a href="#!">Third</a></li>
-              <li><a href="#!">Fourth</a></li>
+              <li>
+                <a href="#!"><i class="material-icons">import_contacts</i>FAQ</a>
+              </li>
+              <li>
+                <a href="#!"><i class="material-icons">mail_outline</i>Contacto</a>
+              </li>
             </ul>
             </div>
           </li>
